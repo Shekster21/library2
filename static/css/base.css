@@ -1,0 +1,43 @@
+header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    
+    color:#c9270e;
+}
+
+.toplevel{
+    display: flex;
+    flex-direction: column;
+    
+   
+
+
+}
+
+
+
+main{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: flex-start;
+    
+    border-radius: 10px;
+}
+
+footer{
+    align-items: flex-end;
+    
+    color:#c9270e;
+}
+
+
+
+
+
+/*styles specific to pages*/
+.info{
+    flex-grow:2;
+}

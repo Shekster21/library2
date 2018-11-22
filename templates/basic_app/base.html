@@ -13,6 +13,23 @@
         <div class="container toplevel">
        <header class="container-fluid"><img src="{% static "images/logo2x.png"%}"/><h2>Department of Electrical and Electronics Engineering</h2>
     </header>
+    <nav class="navbar navbar-default">
+
+    
+    <ul class="nav navbar-nav">
+        
+        {% if user.is_authenticated %}
+        <li><a href="{% url 'basic_app:logout' %}">Logout</a></li>
+
+        {% else %}
+        <li><a href="{% url 'form' %}">Login</a></li>
+        {% endif %}
+        
+    </ul>
+
+
+    
+</nav>
 
         {% block body_block %}
 
