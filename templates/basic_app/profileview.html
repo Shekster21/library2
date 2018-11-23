@@ -5,7 +5,28 @@
 
 {% block body_block %}
 
-    <h1>{{ firstname }}</h1>
-    <h2>{{ lastname }}</h2>
+    <h1>{{ student_name }}</h1>
+    <p>Semester: {{ semester }}</p>
+    
+    <p>Batch: {{ batch }}</p>
+    <p>Register Number: {{ reg }}</p>
+    <br>
+    <br>
+    {% if books_in_hand != 0 %}
+    <label>Books in Hand:</label>
+
+    <ul>
+        {% for book in books %}
+        <li> {{ book.book_title }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if books_in_hand < 2 %}
+        <a href="{% url 'issue_form' %}">Issue a Book</a>
+    {% endif %}
+    {% if books_in_hand > 0 %}
+        <a href="{% url 'return_form' %}">Return a Book</a>
+    {% endif %}
 
 {% endblock %}

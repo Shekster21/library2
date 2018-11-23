@@ -1,0 +1,23 @@
+<!doctype html>
+
+{% extends 'basic_app/base.html' %}
+
+{% block body_block %}
+<form action="{% url 'basic_app:return'%}" method="POST">
+        {% csrf_token %}
+    <table>
+        <tr>
+            <td><label>User Id:</label></td>
+            <td><input type="text" name="user"></td>
+        </tr>
+        <tr>
+            <td><label>Book_Id:</label></td>
+            <td><input type="text" name="book"></td>
+        </tr>
+        <tr>
+            <td colspan="2"><input type="submit" value="RETURN"></td>
+        </tr>
+    </table>
+</form>
+
+{% endblock%}

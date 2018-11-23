@@ -22,5 +22,7 @@ urlpatterns = [
     path('',views.index,name='index'),
     path(r'basic_app/',include('basic_app.urls')),
     path(r'login/',views.login_form,name='form'),
+    path(r'issue/',views.issue_form,name='issue_form'),
+    path(r'return/',views.return_form,name='return_form'),
 
 ]
