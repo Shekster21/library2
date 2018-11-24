@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse
 from datetime import datetime,timedelta
+from django.utils import timezone
 from basic_app import models
 
 # Create your views here.
@@ -47,7 +48,8 @@ def profile(request):
         semester = student.semester
         reg = student.register_number
         batch = student.batch
-        return render(request,'basic_app/profileview.html',{'student_name':name,'semester':semester,'batch':batch,'reg':reg,'books_in_hand':len(books),'books':books})
+        fine = student.pending_fines
+        return render(request,'basic_app/profileview.html',{'student_name':name,'semester':semester,'batch':batch,'reg':reg,'books_in_hand':len(books),'books':books,'fine':fine})
     else:
         return HttpResponseRedirect(reverse('index'))         
         
@@ -59,19 +61,25 @@ def user_logout(request):
 @login_required
 def issueBook(request):
     if request.method == 'POST':
-        book = request.POST.get('book')
-        user = request.POST.get('user')
-        
-        query1 = models.catalogue.objects.get(book_id = book)
-        query1.curr_user = user
-        query1.issue_status = True 
-        query1.due_date = datetime.now()+timedelta(days = 14)
-        query1.save()
+        try:
+            book = request.POST.get('book')
+            user = request.user
+            
+            query1 = models.catalogue.objects.get(book_id = book)
+            if query1.issue_status == True:
+                return render(request,'basic_app/error.html',{'text':"Please check the Book Id."})
+            query1.curr_user = user.username
+            query1.issue_status = True 
+            query1.due_date = timezone.now()+timedelta(days = 14)
+            query1.save()
 
-        query2 = models.issueRegister(book = book,user = user,issue_time = datetime.now(),due_date = datetime.now()+timedelta(days = 14),return_time = datetime.now())
-        query2.save()
+            query2 = models.issueRegister(book = book,user = user.username,issue_time = timezone.now(),due_date = datetime.now()+timedelta(days = 14),return_time = datetime.now())
+            query2.save()
 
-        return HttpResponseRedirect(reverse('basic_app:profile'))
+            return HttpResponseRedirect(reverse('basic_app:profile'))
+        except:
+            return render(request,'basic_app/error.html',{'text':"Issue failed."})
+
     else:
         return render(request,'basic_app/error.html',{'text':"Issue failed."})
 
@@ -80,21 +88,25 @@ def returnBook(request):
 
     if request.method == 'POST':
         book = request.POST.get('book')
-        user = request.POST.get('user')
+        user = request.user
 
-        issue = list(models.issueRegister.objects.filter(book = book,user = user).order_by('issue_time')).pop()
-        issue.return_time = datetime.now()
+        issue = list(models.issueRegister.objects.filter(book = book,user = user.username).order_by('issue_time')).pop()
+        issue.return_time = timezone.now()
+        issue.returned = True
         issue.save()
 
-        student = models.userInfo.objects.get(user= request.user)
+        student = models.userInfo.objects.get(user=user)
         query1 = models.catalogue.objects.get(book_id = book)
+        
         if (issue.return_time-issue.due_date).days > 14 :
             x = (issue.return_time-issue.due_date).days
             fine = 10 + ((x//10)*50)
-            student.pending_fines = fine
+            student.pending_fines += fine
+            
         query1.curr_user = -1
         query1.issue_status = False
         query1.save()
+        student.save()
 
         return HttpResponseRedirect(reverse('basic_app:profile'))
     else:

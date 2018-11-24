@@ -11,15 +11,35 @@
     <p>Batch: {{ batch }}</p>
     <p>Register Number: {{ reg }}</p>
     <br>
+    <p>Pending Fines:{{ fine }}</p>
+    <br>
     <br>
     {% if books_in_hand != 0 %}
     <label>Books in Hand:</label>
-
-    <ul>
-        {% for book in books %}
-        <li> {{ book.book_title }}</li>
-        {% endfor %}
-    </ul>
+    <table class='table'>
+        <thead>
+            <th>Book</th>
+            <th>ID</th>
+            <th>Author</th>
+            <th>Due Date</th>
+        </thead>
+    {% for book in books %}
+        <tr>                 
+            <td>
+                 {{ book.book_title }}      
+            </td>
+            <td>{{ book.book_id }}</td>
+            <td>
+                {{ book.author }}
+            </td>
+            <td>
+                {{ book.due_date }}
+            </td>
+                                                
+        </tr>
+    {% endfor %}
+    </table>
+    
     {% endif %}
 
     {% if books_in_hand < 2 %}

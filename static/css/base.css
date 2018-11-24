@@ -1,11 +1,24 @@
+body{
+    background-color: #e6eaf2;
+    margin-left: 0%;
+    margin-right: 0%;
+}
 header{
     display: flex;
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
-    
-    color:#c9270e;
+    background-color: #b0c4e5;
+    color:#043e9b;
 }
+
+nav{
+    background-color: #d2def2;
+}
+
+
+
+
 
 .toplevel{
     display: flex;
@@ -29,8 +42,10 @@ main{
 
 footer{
     align-items: flex-end;
+    position: sticky;
+    bottom: 0;
     
-    color:#c9270e;
+    color:#043e9b;
 }
 
 

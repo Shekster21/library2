@@ -1,0 +1,10 @@
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+
+<h2 id="site-name"><a href="{% url 'admin:index' %}">Department of Electrical and Electronics Engineering</a></h2>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import datetime
 from django.contrib.auth.models import User
 
 # Create your models here.
@@ -17,14 +17,23 @@ class userInfo(models.Model):
     def __str__(self):
         return self.user.username
 
+    def username(self):
+        return self.user.username
+    
+    def first_name(self):
+        return self.user.first_name
+    
+    def last_name(self):
+        return self.user.last_name
+
 class catalogue(models.Model):
     book_id = models.IntegerField(primary_key=True)
     book_title = models.CharField(max_length = 150)
     author = models.CharField(max_length = 50)
     size = models.IntegerField()
     issue_status = models.BooleanField(default = False)
-    due_date = models.DateTimeField(default = None)
-    curr_user = models.IntegerField(default=None)
+    due_date = models.DateTimeField(default = datetime.now())
+    curr_user = models.IntegerField(default=-1)
 
 
 
@@ -40,3 +49,4 @@ class issueRegister(models.Model):
     user = models.IntegerField(default = None)
     due_date = models.DateTimeField(default = None)
     return_time = models.DateTimeField(default = None)
+    returned = models.BooleanField(default = False)
