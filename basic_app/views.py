@@ -4,7 +4,7 @@ from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.decorators import login_required
 
 from django.urls import reverse
-from datetime import datetime
+from datetime import datetime,timedelta
 from basic_app import models
 
 # Create your views here.
@@ -31,18 +31,25 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request,user)
-                books = models.catalogue.objects.filter(curr_user = user.username)
-                student = models.userInfo.objects.get(user=user)
-                name = student.user.first_name+' '+student.user.last_name
-                semester = student.semester
-                reg = student.register_number
-                batch = student.batch
-                return render(request,'basic_app/profileview.html',{'student_name':name,'semester':semester,'batch':batch,'reg':reg,'books_in_hand':len(books),'books':books})
+                return HttpResponseRedirect(reverse('basic_app:profile'))
         else:
             return render(request,'basic_app/error.html',{'text':"Authentication failed."})
 
     else:
-        return
+        return HttpResponseRedirect(reverse('index'))
+
+def profile(request):
+    if request.user.is_authenticated:
+        user = request.user
+        books = models.catalogue.objects.filter(curr_user = user.username)
+        student = models.userInfo.objects.get(user=user)
+        name = student.user.first_name+' '+student.user.last_name
+        semester = student.semester
+        reg = student.register_number
+        batch = student.batch
+        return render(request,'basic_app/profileview.html',{'student_name':name,'semester':semester,'batch':batch,'reg':reg,'books_in_hand':len(books),'books':books})
+    else:
+        return HttpResponseRedirect(reverse('index'))         
         
 @login_required
 def user_logout(request):
@@ -58,12 +65,13 @@ def issueBook(request):
         query1 = models.catalogue.objects.get(book_id = book)
         query1.curr_user = user
         query1.issue_status = True 
+        query1.due_date = datetime.now()+timedelta(days = 14)
         query1.save()
 
-        query2 = models.issueRegister(book = book,user = user,issue_time = datetime.now(),return_time = datetime.now())
+        query2 = models.issueRegister(book = book,user = user,issue_time = datetime.now(),due_date = datetime.now()+timedelta(days = 14),return_time = datetime.now())
         query2.save()
 
-        return HttpResponseRedirect(reverse('login'))
+        return HttpResponseRedirect(reverse('basic_app:profile'))
     else:
         return render(request,'basic_app/error.html',{'text':"Issue failed."})
 
@@ -78,11 +86,16 @@ def returnBook(request):
         issue.return_time = datetime.now()
         issue.save()
 
+        student = models.userInfo.objects.get(user= request.user)
         query1 = models.catalogue.objects.get(book_id = book)
+        if (issue.return_time-issue.due_date).days > 14 :
+            x = (issue.return_time-issue.due_date).days
+            fine = 10 + ((x//10)*50)
+            student.pending_fines = fine
         query1.curr_user = -1
         query1.issue_status = False
         query1.save()
 
-        return HttpResponseRedirect(reverse('login'))
+        return HttpResponseRedirect(reverse('basic_app:profile'))
     else:
         return render(request,'basic_app/error.html',{'text':"Return failed."})
