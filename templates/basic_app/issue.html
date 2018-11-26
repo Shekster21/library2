@@ -3,6 +3,10 @@
 {% extends 'basic_app/base.html' %}
 
 {% block body_block %}
+{% if user.is_authenticated %}
+<a href="{% url 'basic_app:profile' %}">Home</a>
+{% endif%}
+
 <form action="{% url 'basic_app:issue'%}" method="POST">
         {% csrf_token %}
     <table>

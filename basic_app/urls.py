@@ -9,6 +9,6 @@ urlpatterns = [
     path(r'issue/',views.issueBook,name='issue'),
     path(r'return/',views.returnBook,name='return'),
     path(r'profile/',views.profile,name = 'profile'),
-    
-    
+    path(r'search/',views.search,name='search'),
+    path(r'search_form/',views.search_form,name='search_form'),
 ]

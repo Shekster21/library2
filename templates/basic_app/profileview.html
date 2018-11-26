@@ -41,7 +41,7 @@
     </table>
     
     {% endif %}
-
+    <a href="{% url 'basic_app:search_form'%}">Find a Book</a>
     {% if books_in_hand < 2 %}
         <a href="{% url 'issue_form' %}">Issue a Book</a>
     {% endif %}

@@ -4,6 +4,8 @@
 
 
 {% block body_block %}
-
+    {% if user.is_authenticated %}
+    <a href="{% url 'basic_app:profile' %}">Home</a>
+    {% endif%}
     {{ text }}
 {% endblock %}

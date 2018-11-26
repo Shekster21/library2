@@ -89,12 +89,13 @@ def returnBook(request):
     if request.method == 'POST':
         book = request.POST.get('book')
         user = request.user
-
-        issue = list(models.issueRegister.objects.filter(book = book,user = user.username).order_by('issue_time')).pop()
-        issue.return_time = timezone.now()
-        issue.returned = True
-        issue.save()
-
+        try:
+            issue = list(models.issueRegister.objects.filter(book = book,user = user.username).order_by('issue_time')).pop()
+            issue.return_time = timezone.now()
+            issue.returned = True
+            issue.save()
+        except:
+            return render(request,'basic_app/error.html',{'text':"Blease check the book Id."})
         student = models.userInfo.objects.get(user=user)
         query1 = models.catalogue.objects.get(book_id = book)
         
@@ -111,3 +112,22 @@ def returnBook(request):
         return HttpResponseRedirect(reverse('basic_app:profile'))
     else:
         return render(request,'basic_app/error.html',{'text':"Return failed."})
+
+@login_required
+def search(request):
+    if request.method == "POST":
+        query = request.POST.get('search')
+        choice = request.POST.get('choice')
+        if choice == "book":
+            search_list = models.catalogue.objects.filter(book_title__icontains=query)
+            print("hoi")
+        elif choice == "author":
+            search_list = models.catalogue.objects.filter(author__icontains=query)
+        length = len(search_list)
+        return render(request,'basic_app/results.html',{'length':length,'search_list':search_list}) 
+    else:
+        return render(request,'basic_app/error.html',{'text':"There was an error in one of the search parameters."})
+
+@login_required
+def search_form(request):
+    return render(request,'basic_app/search.html')
